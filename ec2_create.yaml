@@ -1,0 +1,25 @@
+---
+- hosts: localhost
+  connection: local
+
+  tasks:
+  - name: create EC2 instances
+    amazon.aws.ec2_instance:
+      name: "{{ item.name }}"
+      key_name: "ansible-project"
+      instance_type: t2.micro
+      security_group: sg-0cbb27c5074e9b6c9  # Ensure this group belongs to the instance's VPC
+      region: us-east-1
+      aws_access_key: "{{ec2_access_key}}"  # From vault as defined
+      aws_secret_key: "{{ec2_secret_key}}"  # From vault as defined      
+      network_interfaces:
+        - device_index: 0
+          assign_public_ip: true
+      image_id: "{{ item.image }}"
+      # tags:
+      # environment: "{{ item.name }}"
+    loop:
+      - { image: "ami-0453ec754f44f9a4a", name: "manage-node-1" } # Update AMI ID according 
+      - { image: "ami-0866a3c8686eaeeba", name: "manage-node-2" } # to your account
+      - { image: "ami-0866a3c8686eaeeba", name: "manage-node-3" }
+ 
